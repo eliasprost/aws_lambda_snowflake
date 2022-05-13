@@ -1,0 +1,35 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: ''
+Parameters:
+  TestSnowflakeS3credentials:
+    Type: String
+    Default: elias-snowflake-credentials
+Resources:
+  TestSnowflakeS3:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: test-snowflake-s3
+      Handler: lambda.lambda_handler
+      Runtime: python3.8
+      CodeUri: TestSnowflakeS3
+      Description: ''
+      MemorySize: 1024
+      Timeout: 900
+      Role: arn:aws:iam::079568708071:role/inventa-dwh-stage-datalake-orders
+      VpcConfig:
+        SecurityGroupIds:
+        - sg-0ce6c88cc21b2254f
+        - sg-da8120dd
+        SubnetIds:
+        - subnet-082d9e50e8d44abd3
+        - subnet-0743ce27e0bd3cbb0
+      Tags:
+        Project: test-snowflake-s3
+        Owner: DS
+      Environment:
+        Variables:
+          SNOWFLAKE_CREDENTIALS:
+            Fn::Sub: '{{resolve:secretsmanager:${TestSnowflakeS3credentials}:SecretString}}'
+    Metadata:
+      SamResourceId: TestSnowflakeS3
